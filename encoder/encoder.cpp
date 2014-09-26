@@ -89,7 +89,7 @@ void Encoder::create()
         abort();
     }
 
-    m_frameEncoder = new FrameEncoder[m_param->frameNumThreads];
+    m_frameEncoder = new FrameEncoder[m_param->frameNumThreads]; //一个m_frameEncoder[]表示一个帧编码器
     if (m_frameEncoder)
     {
         for (int i = 0; i < m_param->frameNumThreads; i++)
@@ -271,7 +271,7 @@ int Encoder::encode(const x265_picture* pic_in, x265_picture *pic_out)
             return -1;
         }
 
-        Frame *pic;
+        Frame *pic; //pic复制了image的所有信息
         if (m_dpb->m_freeList.empty()) //decoded picture buffer(保存已编码图像信息，用于参考)
         {
             pic = new Frame; 

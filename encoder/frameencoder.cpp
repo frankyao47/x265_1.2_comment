@@ -743,6 +743,7 @@ void FrameEncoder::compressCTURows()
     TComSlice* slice = m_frame->getSlice();
 
     // reset entropy coders
+    // 重置熵编码器，每行一个，m_entropyCoder = m_sbacCoder?(CABAC部分)
     m_sbacCoder.init(&m_binCoderCABAC);
     for (int i = 0; i < this->m_numRows; i++)
     {
