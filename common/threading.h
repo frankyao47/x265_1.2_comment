@@ -103,7 +103,7 @@ inline int _BitScanForward64(DWORD *id, uint64_t x64) // fake 64bit CLZ
 #define ATOMIC_OR(ptr, mask)                InterlockedOr64((volatile LONG64*)ptr, mask)
 #endif
 
-#define CLZ32(id, x)                        _BitScanReverse(&id, x)
+#define CLZ32(id, x)                        _BitScanReverse(&id, x) //存在bit 1最高位
 #define CTZ64(id, x)                        _BitScanForward64(&id, x)
 #define ATOMIC_CAS(ptr, oldval, newval)     (uint64_t)_InterlockedCompareExchange64((volatile LONG64*)ptr, newval, oldval)
 #define ATOMIC_CAS32(ptr, oldval, newval)   (uint64_t)_InterlockedCompareExchange((volatile LONG*)ptr, newval, oldval)

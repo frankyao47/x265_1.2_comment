@@ -86,7 +86,7 @@ extern "C" intptr_t x265_stack_align(void (*func)(), ...);
 #pragma warning(disable: 4127) // some checks have constant conditions
 #endif
 #else
-#define X265_CHECK(expr, ...)
+#define X265_CHECK(expr, ...) //exprÎªfalse±¨´í
 #endif
 
 #if HIGH_BIT_DEPTH

@@ -157,11 +157,11 @@ void TEncBinCABAC::encodeBin(uint32_t binValue, ContextModel &ctxModel)
         DTRACE_CABAC_T("\tsymbol=")
         DTRACE_CABAC_V(binValue)
         DTRACE_CABAC_T("\n")
-    }
+    } //debug, ignore
 
     uint32_t mstate = ctxModel.m_state;
 
-    ctxModel.m_state = sbacNext(mstate, binValue);
+    ctxModel.m_state = sbacNext(mstate, binValue); //获取下一个状态(pStateIdx << 1 + valMPS)
 
     if (m_bIsCounter)
     {
@@ -170,9 +170,11 @@ void TEncBinCABAC::encodeBin(uint32_t binValue, ContextModel &ctxModel)
     }
     ctxModel.bBinsCoded = 1;
 
-    uint32_t range = m_range;
-    uint32_t state = sbacGetState(mstate);
-    uint32_t lps = g_lpsTable[state][((uint8_t)range >> 6)];
+
+	//HEVC Draft 10 Figure9-6
+    uint32_t range = m_range; //codIRange
+    uint32_t state = sbacGetState(mstate); //pStateIdx
+    uint32_t lps = g_lpsTable[state][((uint8_t)range >> 6)]; //9.2.3.2.1.1，lps值codIRangeLPS???
     range -= lps;
 
     X265_CHECK(lps >= 2, "lps is too small\n");
@@ -182,12 +184,13 @@ void TEncBinCABAC::encodeBin(uint32_t binValue, ContextModel &ctxModel)
 
     // NOTE: MPS must be LOWEST bit in mstate
     X265_CHECK(((binValue ^ mstate) & 1) == (binValue != sbacGetMps(mstate)), "binValue failure\n");
-    if ((binValue ^ mstate) & 1)
+    if ((binValue ^ mstate) & 1) //binValue是不是valMPS, 是-> 0, 不是 -> 1
     {
         // NOTE: lps is non-zero and the maximum of idx is 8 because lps less than 256
         //numBits   = g_renormTable[lps >> 3];
+        // binValue == valMPS
         unsigned long idx;
-        CLZ32(idx, lps);
+        CLZ32(idx, lps); //lps中bit 1的最高位
         X265_CHECK(state != 63 || idx == 1, "state failure\n");
 
         numBits = 8 - idx;

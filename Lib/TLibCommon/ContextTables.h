@@ -136,16 +136,16 @@ namespace x265 {
 typedef struct ContextModel
 {
     uint8_t m_state;  ///< internal state variable
-    uint8_t bBinsCoded;
+    uint8_t bBinsCoded; //编码完毕
 } ContextModel;
 
 extern const uint32_t g_entropyBits[128];
 extern const uint8_t g_nextState[128][2];
 uint8_t sbacInit(int qp, int initValue);   ///< initialize state with initial probability
 
-#define sbacGetMps(S)               ((S) & 1)
+#define sbacGetMps(S)               ((S) & 1) //(S) % 2，获取LSB
 #define sbacGetState(S)             ((S) >> 1)
-#define sbacNext(S, V)              (g_nextState[(S)][(V)]) //S:状态; V:bin
+#define sbacNext(S, V)              (g_nextState[(S)][(V)]) //S:m_state; V:bin; 根据m_state和bin获取下一个状态
 #define sbacGetEntropyBits(S, V)    (g_entropyBits[(S) ^ (V)])
 #define sbacGetEntropyBitsTrm(V)    (g_entropyBits[126 ^ (V)])
 #define  CHANNEL_TYPE_LUMA         0

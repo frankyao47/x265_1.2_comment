@@ -89,7 +89,7 @@ public:
     int        m_numBufferedBytes;
     int        m_bitsLeft;
     uint64_t   m_fracBits;
-    bool       m_bIsCounter;
+    bool       m_bIsCounter; //与上面的m_fracBits似乎相关，用于计数?
 };
 }
 //! \}
