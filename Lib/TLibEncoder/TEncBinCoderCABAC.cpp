@@ -148,6 +148,7 @@ void TEncBinCABAC::resetBits()
  * \param binValue   bin value
  * \param rcCtxModel context model
  */
+ //正常编
 void TEncBinCABAC::encodeBin(uint32_t binValue, ContextModel &ctxModel)
 {
     {
@@ -179,7 +180,7 @@ void TEncBinCABAC::encodeBin(uint32_t binValue, ContextModel &ctxModel)
 
     X265_CHECK(lps >= 2, "lps is too small\n");
 
-    int numBits = (uint32_t)(range - 256) >> 31;
+    int numBits = (uint32_t)(range - 256) >> 31; //range < 256: numBits = 1; range > 256: numBits = 0;(编MPS的时候，最多range减半)
     uint32_t low = m_low;
 
     // NOTE: MPS must be LOWEST bit in mstate
@@ -190,7 +191,7 @@ void TEncBinCABAC::encodeBin(uint32_t binValue, ContextModel &ctxModel)
         //numBits   = g_renormTable[lps >> 3];
         // binValue == valMPS
         unsigned long idx;
-        CLZ32(idx, lps); //lps中bit 1的最高位
+        CLZ32(idx, lps); //lps中bit 1的最高位，即lps range有多大(range需要归一化至8bit~9bit，即256~512之间) 
         X265_CHECK(state != 63 || idx == 1, "state failure\n");
 
         numBits = 8 - idx;
@@ -202,8 +203,8 @@ void TEncBinCABAC::encodeBin(uint32_t binValue, ContextModel &ctxModel)
         range   = lps;
     }
     m_low = (low << numBits);
-    m_range = (range << numBits);
-    m_bitsLeft += numBits;
+    m_range = (range << numBits); //low和range归一化
+    m_bitsLeft += numBits; //归一化的bit位记录输出
 
     if (m_bitsLeft >= 0)
     {
@@ -216,6 +217,7 @@ void TEncBinCABAC::encodeBin(uint32_t binValue, ContextModel &ctxModel)
  *
  * \param binValue bin value
  */
+ //bypass，旁路(等概率)
 void TEncBinCABAC::encodeBinEP(uint32_t binValue)
 {
     {
@@ -248,6 +250,7 @@ void TEncBinCABAC::encodeBinEP(uint32_t binValue)
  * \param binValues bin values
  * \param numBins number of bins
  */
+ //bypass，旁路多bit一起编(等概率)
 void TEncBinCABAC::encodeBinsEP(uint32_t binValues, int numBins)
 {
     if (m_bIsCounter)
@@ -294,6 +297,7 @@ void TEncBinCABAC::encodeBinsEP(uint32_t binValues, int numBins)
  *
  * \param binValue bin value
  */
+ //slice编码结束
 void TEncBinCABAC::encodeBinTrm(uint32_t binValue)
 {
     if (m_bIsCounter)
